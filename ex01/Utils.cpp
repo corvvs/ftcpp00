@@ -20,7 +20,7 @@ bool    Utils::WrapGetLine(std::string *buffer) {
     return true;
 }
 
-bool    print_line_(
+bool    Utils::PrintLine(
     std::string left_mid_right[3],
     std::size_t inner_width
 ) {
@@ -50,11 +50,11 @@ bool    Utils::PrintLinesWithinRect(
 ) {
     std::size_t max_line_len = Utils::MaxLength(lines, lines_len);
     std::size_t inner_width = max_line_len + 2 * padding;
-    if (!print_line_(top_tiles, inner_width)) {
+    if (!PrintLine(top_tiles, inner_width)) {
         return false;
     }
     for (std::size_t i = 0; i < padding; i += 1) {
-        if (!print_line_(mid_tiles, inner_width)) {
+        if (!PrintLine(mid_tiles, inner_width)) {
             return false;
         }
     }
@@ -81,11 +81,11 @@ bool    Utils::PrintLinesWithinRect(
         std::cout << std::endl;
     }
     for (std::size_t i = 0; i < padding; i += 1) {
-        if (!print_line_(mid_tiles, inner_width)) {
+        if (!PrintLine(mid_tiles, inner_width)) {
             return false;
         }
     }
-    if (print_line_(bottom_tiles, inner_width)) {
+    if (PrintLine(bottom_tiles, inner_width)) {
         return false;
     }
     return true;
@@ -118,4 +118,24 @@ std::string Utils::WidenString(std::string left, std::string right, std::size_t 
     }
     widened.append(right);
     return widened;
+}
+
+void    Utils::PrintFieldFixedWidth(
+    std::string str,
+    const size_t width,
+    char padding_char,
+    std::string abbrev_str
+) {
+    const std::size_t field_len = str.length();
+    if (field_len > width) {
+        if (width > 0) {
+            std::cout << str.substr(0, width - 1) << abbrev_str;
+        }
+    } else {
+        std::cout
+            << std::setfill(padding_char)
+            << std::setw(width)
+            << std::right
+            << str;
+    }
 }

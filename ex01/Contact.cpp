@@ -49,21 +49,12 @@ void    Contact::Copy(const Contact item) {
 void    Contact::PrintFieldFixedWidth(
     ContactFieldName field,
     const size_t width,
+    char padding_char,
     std::string abbrev_str
 ) {
     const std::string *field_value = this->GetField(field);
     if (field_value == NULL) { return; }
-    const std::size_t field_len = field_value->length();
-    if (field_len > width) {
-        if (width > 0) {
-            std::cout << field_value->substr(0, width - 1) << abbrev_str;
-        }
-    } else {
-        for (size_t i = 0; i < width - field_len; i += 1) {
-            std::cout << " ";
-        }
-        std::cout << *field_value;
-    }
+    Utils::PrintFieldFixedWidth(*field_value, width, padding_char, abbrev_str);
 }
 
 void    Contact::PrintInfo() {

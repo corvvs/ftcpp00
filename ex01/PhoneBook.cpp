@@ -42,7 +42,104 @@ void    PhoneBook::ExecAdd() {
 }
 
 void    PhoneBook::ExecSearch() {
-    
+    this->PrintSearchTable();
+    this->SearchByIndex();
+}
+
+void    PrintTableSeparatorRow(const std::size_t col_len) {
+    std::cout << "+";
+    for (std::size_t i = 0; i < 4; i += 1) {
+        Utils::PrintFieldFixedWidth("", col_len, '-', ".");
+        std::cout << "+";
+    }
+    std::cout << std::endl;
+}
+
+void    PhoneBook::PrintSearchTable() {
+    const std::size_t col_len = 10;
+    const std::string col_names[4] = {
+        "index", "first name", "last name", "nickname",
+    };
+    std::cout << std::endl;
+    PrintTableSeparatorRow(col_len);
+    std::cout << "|";
+    for (std::size_t i = 0; i < 4; i += 1) {
+        Utils::PrintFieldFixedWidth(col_names[i], col_len, ' ', ".");
+        std::cout << "|";
+    }
+    std::cout << std::endl;
+    PrintTableSeparatorRow(col_len);
+    if (this->total_index_ == 0) {
+        return;
+    }
+    std::size_t item_num = (this->total_index_ >= kMaxContactNumber) ? kMaxContactNumber : this->total_index_;
+    for (std::size_t k = 0; k < item_num; k += 1) {
+        std::size_t item_index = (this->total_index_ + kMaxContactNumber - item_num + k) % kMaxContactNumber;
+        Contact item = this->contacts_[item_index];
+        std::cout << "|";
+        std::stringstream transformer;
+        transformer << k + 1;
+        Utils::PrintFieldFixedWidth(transformer.str(), col_len, ' ', ".");
+        std::cout << "|";
+        ContactFieldName fields[] = {
+            kFirstName,
+            kLastName,
+            kNickname
+        };
+        for (std::size_t i = 1; i < 4; i += 1) {
+            item.PrintFieldFixedWidth(fields[i - 1], col_len, ' ', ".");
+            std::cout << "|";
+        }
+        std::cout << std::endl;
+    }
+    PrintTableSeparatorRow(col_len);
+}
+
+void    PhoneBook::SearchByIndex() {
+    std::string receiver;
+    std::size_t index;
+    std::size_t item_num = (this->total_index_ >= kMaxContactNumber) ? kMaxContactNumber : this->total_index_;
+    std::cout
+        << "enter an index("
+        << 1 << "-" << item_num
+        << ") to show detailed info, or type \"q\" to quit: ";
+    while (true) {
+        if (!Utils::WrapGetLine(&receiver) || receiver == "q") {
+            return;
+        }
+        if (receiver.length() >= 2) {
+            std::cout << std::endl << "please enter an integer: ";
+            continue;
+        }
+        bool accepted = true;
+        for (std::size_t i = 0; i < receiver.length(); i += 1) {
+            if (!isdigit(receiver[i])) {
+                std::cout << std::endl
+                    << 1 << "-" << item_num
+                    << " please enter an integer: ";
+                accepted = false;
+                break;
+            }
+        }
+        if (!accepted) {
+            continue;
+        }
+        std::stringstream transformer;
+        transformer << receiver;
+        transformer >> index;
+        if (index < 1 || item_num < index) {
+            std::cout << std::endl
+                << "please enter an index in range "
+                << 1 << "-" << item_num
+                << ": ";
+            continue;
+        }
+        break;
+    }
+    std::cout << std::endl;
+    const std::size_t offset = this->total_index_ - item_num;
+    const std::size_t actual_index = (index - 1 + kMaxContactNumber - offset) % kMaxContactNumber;
+    this->contacts_[actual_index].PrintInfo();
 }
 
 void    PhoneBook::PrintUsageHelp() {

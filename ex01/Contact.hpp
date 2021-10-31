@@ -27,6 +27,7 @@ class Contact {
         void    PrintFieldFixedWidth(
             ContactFieldName field,
             const size_t width,
+            char padding_char,
             std::string abbrev_str
         );
         void    PrintInfo();

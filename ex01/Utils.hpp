@@ -2,10 +2,15 @@
 # define CPP00_EX01_UTILS_HPP_
 
 # include <iostream>
+# include <iomanip>
 # include <string>
 
 namespace Utils {
     bool        WrapGetLine(std::string *buffer);
+    bool        PrintLine(
+        std::string left_mid_right[3],
+        std::size_t inner_width
+    );
     bool        PrintLinesWithinRect(
         std::string top_tiles[3],
         std::string mid_tiles[3],
@@ -17,6 +22,12 @@ namespace Utils {
     bool        PrintStringRepeatedly(std::string str, std::size_t iteration);
     std::size_t MaxLength(std::string strs[], std::size_t len);
     std::string WidenString(std::string left, std::string right, std::size_t width);
+    void        PrintFieldFixedWidth(
+        std::string str,
+        const size_t width,
+        char padding_char,
+        std::string abbrev_str
+    );
 }
 
 #endif

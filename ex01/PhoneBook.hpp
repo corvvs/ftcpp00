@@ -3,8 +3,10 @@
 
 # include <string>
 # include <iostream>
+# include <sstream>
 # include <cstddef>
 # include <stdlib.h>
+# include <ctype.h>
 # include "Contact.hpp"
 # include "Utils.hpp"
 
@@ -16,7 +18,7 @@ const size_t kMaxContactNumber = 8;
 class PhoneBook {
     public:
         PhoneBook();
-        void    Start();
+        void        Start();
 
     private:
         Contact     contacts_[kMaxContactNumber];
@@ -25,6 +27,8 @@ class PhoneBook {
 
         void        ExecAdd();
         void        ExecSearch();
+        void        PrintSearchTable();
+        void        SearchByIndex();
         void        PrintUsageHelp();
         void        AddContact(Contact item);
 };
