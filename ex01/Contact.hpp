@@ -4,6 +4,7 @@
 # include <string>
 # include <iostream>
 # include <cstddef>
+# include <sstream>
 # include "Utils.hpp"
 
 enum ContactFieldName {
@@ -30,7 +31,7 @@ class Contact {
             char padding_char,
             std::string abbrev_str
         );
-        void    PrintInfo();
+        void    PrintInfo(std::size_t index);
 
     private:
         std::string first_name_;
@@ -40,9 +41,6 @@ class Contact {
         std::string darkest_secret_;
 
         std::string *GetField(ContactFieldName field);
-        bool        IsValidName(std::string val);
-        bool        IsValidPhoneNumber(std::string val);
-        bool        IsValidSecret(std::string val);
 };
 
 #endif

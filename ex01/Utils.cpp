@@ -10,13 +10,34 @@ bool    Utils::WrapGetLine(std::string *buffer) {
     }
     std::size_t start = 0;
     std::size_t end = temp.length();
-    while (start < end && temp[start] == ' ') {
+    while (start < end && isspace(temp[start])) {
         start += 1;
     }
-    while (start < end && temp[end - 1] == ' ') {
+    while (start < end && isspace(temp[end - 1])) {
         end -= 1;
     }
     *buffer = temp.substr(start, end - start);
+    return true;
+}
+
+bool    Utils::AskAndGetLine(
+    std::string *buffer,
+    const std::string prompt,
+    bool (*validator)(const std::string)
+) {
+    while (true) {
+        std::cout << prompt;
+        if (!WrapGetLine(buffer)) {
+            return false;
+        }
+        if (*buffer == Utils::kQuitAsk) {
+            return false;
+        }
+        if (validator && !validator(*buffer)) {
+            continue;
+        }
+        break;
+    }
     return true;
 }
 
@@ -111,7 +132,11 @@ std::size_t Utils::MaxLength(std::string strs[], std::size_t len) {
     return MaxLength;
 }
 
-std::string Utils::WidenString(std::string left, std::string right, std::size_t width) {
+std::string Utils::WidenString(
+    const std::string left,
+    const std::string right,
+    std::size_t width
+) {
     std::string widened = std::string(left);
     for (std::size_t i = widened.length() + right.length(); i < width; i += 1) {
         widened.append(" ");
@@ -120,11 +145,31 @@ std::string Utils::WidenString(std::string left, std::string right, std::size_t 
     return widened;
 }
 
+std::string Utils::CenterString(const std::string str, std::size_t width) {
+    std::stringstream joiner;
+    const std::size_t len_str = str.length();
+    if (len_str > width) {
+        joiner << str;
+        return joiner.str();
+    }
+    const std::size_t rest = width - len_str;
+    const std::size_t padding_left = rest / 2;
+    const std::size_t padding_right = rest - padding_left;
+    for (std::size_t i = 0; i < padding_left; i += 1) {
+        joiner << " ";
+    }
+    joiner << str;
+    for (std::size_t i = 0; i < padding_right; i += 1) {
+        joiner << " ";
+    }
+    return joiner.str();
+}
+
 void    Utils::PrintFieldFixedWidth(
-    std::string str,
+    const std::string str,
     const size_t width,
     char padding_char,
-    std::string abbrev_str
+    const std::string abbrev_str
 ) {
     const std::size_t field_len = str.length();
     if (field_len > width) {
@@ -138,4 +183,43 @@ void    Utils::PrintFieldFixedWidth(
             << std::right
             << str;
     }
+}
+
+bool    Utils::IsValidName(std::string val) {
+    if (val.length() == 0) {
+        return false;
+    }
+    return true;
+}
+
+bool    Utils::IsValidPhoneNumber(std::string val) {
+    std::size_t n = val.length();
+    // positive length
+    if (n == 0) {
+        return false;
+    }
+    // digits and hyphen
+    // continuous hyphen
+    bool is_hyphen = true;
+    for (std::size_t i = 0; i < n; i += 1) {
+        if (!(isdigit(val[i]) || val[i] == '-')) {
+            return false;
+        }
+        if (is_hyphen && val[i] == '-') {
+            return false;
+        }
+        is_hyphen = (val[i] == '-');
+    }
+    // no leading / trailing hyphen.
+    if (val[0] == '-' || val[n - 1] == '-') {
+        return false;
+    }
+    return true;
+}
+
+bool    Utils::IsValidSecret(std::string val) {
+    if (val.length() == 0) {
+        return false;
+    }
+    return true;
 }
