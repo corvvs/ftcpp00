@@ -21,9 +21,9 @@ enum ContactFieldName {
 
 class Contact {
     public:
-        Contact();
+        Contact(void);
 
-        bool    SetFields();
+        bool    SetFields(void);
         void    Copy(const Contact item);
         void    PrintFieldFixedWidth(
             ContactFieldName field,

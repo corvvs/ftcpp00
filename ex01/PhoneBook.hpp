@@ -17,19 +17,19 @@ const size_t kMaxContactNumber = 8;
 
 class PhoneBook {
     public:
-        PhoneBook();
-        void        Start();
+        PhoneBook(void);
+        void        Start(void);
 
     private:
         Contact     contacts_[kMaxContactNumber];
         std::size_t total_index_;
         std::size_t store_index_;
 
-        void        ExecAdd();
-        void        ExecSearch();
-        void        PrintSearchTable();
-        void        SearchByIndex();
-        void        PrintUsageHelp();
+        void        ExecAdd(void);
+        void        ExecSearch(void);
+        void        PrintSearchTable(void);
+        void        SearchByIndex(void);
+        void        PrintUsageHelp(void);
         void        AddContact(Contact item);
 };
 

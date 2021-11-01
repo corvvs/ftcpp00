@@ -1,6 +1,6 @@
 #include "Contact.hpp"
 
-Contact::Contact():
+Contact::Contact(void):
     first_name_(""),
     last_name_(""),
     nickname_(""),
@@ -8,7 +8,7 @@ Contact::Contact():
     darkest_secret_("")
 {}
 
-bool    Contact::SetFields() {
+bool    Contact::SetFields(void) {
     std::cout << std::endl;
     std::cout << "Please input contact data. (type \".q\" to quit)" << std::endl;
     if (!Utils::AskAndGetLine(&first_name_,

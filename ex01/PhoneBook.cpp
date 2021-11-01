@@ -1,9 +1,9 @@
 #include "PhoneBook.hpp"
 
-PhoneBook::PhoneBook(): total_index_(0), store_index_(0)
+PhoneBook::PhoneBook(void): total_index_(0), store_index_(0)
 {}
 
-void    PhoneBook::Start() {
+void    PhoneBook::Start(void) {
     std::string read_str;
 
     while (true) {
@@ -26,7 +26,7 @@ void    PhoneBook::Start() {
     }
 }
 
-void    PhoneBook::ExecAdd() {
+void    PhoneBook::ExecAdd(void) {
     Contact temp = Contact();
     if (!temp.SetFields()) {
         return;
@@ -40,7 +40,7 @@ void    PhoneBook::ExecAdd() {
     total_index_ += 1;
 }
 
-void    PhoneBook::ExecSearch() {
+void    PhoneBook::ExecSearch(void) {
     PrintSearchTable();
     if (total_index_ == 0) {
         return;
@@ -61,7 +61,7 @@ void    PrintTableSeparatorRow(const std::size_t col_len, bool with_crosspoint) 
     std::cout << std::endl;
 }
 
-void    PhoneBook::PrintSearchTable() {
+void    PhoneBook::PrintSearchTable(void) {
     const std::size_t col_len = 10;
     const std::string col_names[4] = {
         "index", "first name", "last name", "nickname",
@@ -87,9 +87,9 @@ void    PhoneBook::PrintSearchTable() {
     for (std::size_t k = 0; k < item_num; k += 1) {
         std::size_t item_index = (total_index_ + kMaxContactNumber - item_num + k) % kMaxContactNumber;
         Contact item = contacts_[item_index];
-        std::cout << "|";
         std::stringstream transformer;
         transformer << k + 1;
+        std::cout << "|";
         Utils::PrintFieldFixedWidth(transformer.str(), col_len, ' ', ".");
         std::cout << "|";
         ContactFieldName fields[] = {
@@ -106,7 +106,7 @@ void    PhoneBook::PrintSearchTable() {
     PrintTableSeparatorRow(col_len, true);
 }
 
-void    PhoneBook::SearchByIndex() {
+void    PhoneBook::SearchByIndex(void) {
     std::string receiver;
     std::size_t index;
     std::size_t item_num = (total_index_ >= kMaxContactNumber) ? kMaxContactNumber : total_index_;
@@ -156,7 +156,7 @@ void    PhoneBook::SearchByIndex() {
     contacts_[actual_index].PrintInfo(index);
 }
 
-void    PhoneBook::PrintUsageHelp() {
+void    PhoneBook::PrintUsageHelp(void) {
     std::string command_names[] = {
         "ADD: ",
         "SEARCH: ",
