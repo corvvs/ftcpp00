@@ -6,10 +6,10 @@ OBJS		:=	$(SRCS:.cpp=.o)
 
 .PHONY		:	all clean fclean re
 
-all			:	$(OBJS)
+all			:	$(NAME)
+$(NAME)		:	$(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
-$(NAME)		:	all
 
 clean		:
 	$(RM) -rf $(OBJS)

@@ -179,5 +179,5 @@ void    PhoneBook::PrintUsageHelp() {
             Utils::WidenString(command_names[0], command_descs[0], row_width),
             Utils::WidenString(command_names[1], command_descs[1], row_width),
             Utils::WidenString(command_names[2], command_descs[2], row_width),
-        }, 6, 1);
+        }, 5, 1);
 }

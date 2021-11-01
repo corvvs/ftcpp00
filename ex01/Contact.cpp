@@ -83,7 +83,7 @@ void    Contact::PrintInfo(std::size_t index) {
             Utils::WidenString("Nickame: "       , nickname_, row_width),
             Utils::WidenString("Phone Number: "  , phone_number_, row_width),
             Utils::WidenString("Darkest Secret: ", darkest_secret_, row_width),
-        }, 6, 1);
+        }, 7, 1);
 }
 
 std::string   *Contact::GetField(ContactFieldName field) {
