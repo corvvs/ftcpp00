@@ -1,33 +1,29 @@
 #include <iostream>
 #include <cstddef>
+#include <cctype>
 #include <string>
 
 const std::string kNoise = "* LOUD AND UNBEARABLE FEEDBACK NOISE *";
 
-void    ft_upcase(char *str)
+const std::string    ft_upcase(const std::string& str)
 {
-    std::size_t i = 0;
-    while (str[i]) {
-        char c = str[i];
-        if ('a' <= c && c <= 'z') {
-            str[i] = c + ('A' - 'a');
+    std::string work(str);
+    for (std::size_t i = 0; i < str.length(); i += 1) {
+        if (islower(work[i])) {
+            work[i] = toupper(work[i]);
         }
-        i += 1;
     }
+    return work;
 }
 
 int main(int argc, char **argv)
 {
-    if (argc <= 1)
-    {
-        std::cout << kNoise << std::endl;
-
-        return (0);
-    }
-    for (int i = 1; i < argc; i += 1)
-    {
-        ft_upcase(argv[i]);
-        std::cout << argv[i];
+    if (argc <= 1) {
+        std::cout << kNoise;
+    } else {
+        for (int i = 1; i < argc; i += 1) {
+            std::cout << ft_upcase(argv[i]);
+        }
     }
     std::cout << std::endl;
     return (0);

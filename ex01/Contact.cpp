@@ -1,5 +1,12 @@
 #include "Contact.hpp"
 
+const std::string Contact::kFields[] = {
+    "First Name",
+    "Last Name",
+    "Nickame",
+    "Phone Number",
+    "Darkest Secret"
+};
 const std::string Contact::kInfoTopFrame[3]     = {"╭", "─", "╮"};
 const std::string Contact::kInfoMidFrame[3]     = {"│", " ", "│"};
 const std::string Contact::kInfoBottomFrame[3]  = {"╰", "─", "╯"};
@@ -12,33 +19,39 @@ Contact::Contact(void):
     darkest_secret_("")
 {}
 
-bool    Contact::SetFields(void) {
+bool    Contact::ScanFields(void) {
     std::cout << std::endl;
-    std::cout << "Please input contact data. (type \".q\" to quit)" << std::endl;
+    std::cout << "Please input contact data. (or type \".q\" to quit)" << std::endl;
+    std::size_t prompt_width = Utils::MaxLengthOf(Contact::kFields, kContactFieldNumber) + 2;
     if (!Utils::AskAndGetLine(&first_name_,
-        "First Name: ", Utils::IsValidName)) {
+        Utils::AlignString(Contact::kFields[0] + ": ", prompt_width),
+        Utils::IsValidName)) {
         return false;
     }
     if (!Utils::AskAndGetLine(&last_name_,
-        "Last Name: ", Utils::IsValidName)) {
+        Utils::AlignString(Contact::kFields[1] + ": ", prompt_width),
+        Utils::IsValidName)) {
         return false;
     }
     if (!Utils::AskAndGetLine(&nickname_,
-        "Nickname: ", Utils::IsValidName)) {
+        Utils::AlignString(Contact::kFields[2] + ": ", prompt_width),
+        Utils::IsValidName)) {
         return false;
     }
     if (!Utils::AskAndGetLine(&phone_number_,
-        "Phone Number: ", Utils::IsValidPhoneNumber)) {
+        Utils::AlignString(Contact::kFields[3] + ": ", prompt_width),
+        Utils::IsValidPhoneNumber)) {
         return false;
     }
     if (!Utils::AskAndGetLine(&darkest_secret_,
-        "Darkest Secret: ", NULL)) {
+        Utils::AlignString(Contact::kFields[4] + ": ", prompt_width),
+        NULL)) {
         return false;
     }
     return true;
 }
 
-void    Contact::Copy(const Contact item) {
+void    Contact::CopyFrom(const Contact item) {
     first_name_     = item.first_name_;
     last_name_      = item.last_name_;
     nickname_       = item.nickname_;
@@ -46,28 +59,19 @@ void    Contact::Copy(const Contact item) {
     darkest_secret_ = item.darkest_secret_;
 }
 
-void    Contact::PrintFieldFixedWidth(
-    ContactFieldName field,
-    const size_t width,
-    char padding_char,
-    std::string abbrev_str
-) {
-    const std::string *field_value = GetField(field);
-    if (field_value == NULL) { return; }
-    Utils::PrintFieldFixedWidth(*field_value, width, padding_char, abbrev_str);
-}
-
-void    Contact::PrintInfo(std::size_t index) {
+void    Contact::PrintDetailedInfo(std::size_t index) {
     std::stringstream transformer;
     transformer << index;
-    const std::string index_line = "Contact Index #" + transformer.str();
+    const std::string index_line = index > 0
+        ? "Contact Index #" + transformer.str()
+        : "Your Contact";
     const std::string titles[] = {
         index_line,
-        "First Name: ",
-        "Last Name: ",
-        "Nickame: ",
-        "Phone Number: ",
-        "Darkest Secret: "
+        Contact::kFields[0] + ": ",
+        Contact::kFields[1] + ": ",
+        Contact::kFields[2] + ": ",
+        Contact::kFields[3] + ": ",
+        Contact::kFields[4] + ": ",
     };
     const std::string values[] = {
         first_name_,
@@ -76,35 +80,38 @@ void    Contact::PrintInfo(std::size_t index) {
         phone_number_,
         darkest_secret_
     };
-    std::size_t row_width = Utils::MaxLengthOf(titles, 6) + Utils::MaxLengthOf(values, 5);
+    std::size_t row_width =
+        Utils::MaxLengthOf(titles, 1 + kContactFieldNumber) +
+        Utils::MaxLengthOf(values, kContactFieldNumber);
     const std::string lines[] = {
         Utils::CenterString(index_line, row_width),
         "",
-        Utils::WidenString(titles[1], values[0], row_width),
-        Utils::WidenString(titles[2], values[1], row_width),
-        Utils::WidenString(titles[3], values[2], row_width),
-        Utils::WidenString(titles[4], values[3], row_width),
-        Utils::WidenString(titles[5], values[4], row_width),
+        Utils::SpereadStrings(titles[1], values[0], row_width),
+        Utils::SpereadStrings(titles[2], values[1], row_width),
+        Utils::SpereadStrings(titles[3], values[2], row_width),
+        Utils::SpereadStrings(titles[4], values[3], row_width),
+        Utils::SpereadStrings(titles[5], values[4], row_width),
     };
     Utils::PrintLinesWithinRect(
         Contact::kInfoTopFrame,
         Contact::kInfoMidFrame,
         Contact::kInfoBottomFrame,
-        lines, 7, 1);
+        lines, 2 + kContactFieldNumber, 1);
 }
 
-std::string   *Contact::GetField(ContactFieldName field) {
+const std::string&  Contact::GetField(ContactFieldName field) {
     switch (field) {
         case kFirstName:
-            return &first_name_;
+            return first_name_;
         case kLastName:
-            return &last_name_;
+            return last_name_;
         case kNickname:
-            return &nickname_;
+            return nickname_;
         case kPhoneNumber:
-            return &phone_number_;
+            return phone_number_;
         case kDarkestSecret:
-            return &darkest_secret_;
+            return darkest_secret_;
     }
-    return NULL;
+    // exception
+    return first_name_;
 }

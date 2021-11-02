@@ -1,45 +1,71 @@
 #include "PhoneBook.hpp"
 
+const std::string PhoneBook::kCommands[] = {
+    "ADD",
+    "SEARCH",
+    "EXIT"
+};
+const CommandFunc PhoneBook::kCommandFuncs[] = {
+    &PhoneBook::ExecAdd,
+    &PhoneBook::ExecSearch,
+    &PhoneBook::ExecExit,
+};
 const std::string PhoneBook::kUsageTopFrame[3]      = {"┌", "─", "┐"};
 const std::string PhoneBook::kUsageMidFrame[3]      = {"│", " ", "│"};
 const std::string PhoneBook::kUsageBottomFrame[3]   = {"└", "─", "┘"};
 
-PhoneBook::PhoneBook(void): total_index_(0), store_index_(0)
-{}
+bool    IsValidIndex(const std::string& val) {
+    if (val.length() >= 2) {
+        return false;
+    }
+    if (val.length() == 0) {
+        return false;
+    }
+    for (std::size_t i = 0; i < val.length(); i += 1) {
+        if (!isdigit(val[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+PhoneBook::PhoneBook(void): total_index_(0), store_index_(0) {}
 
 void    PhoneBook::Start(void) {
     std::string read_str;
-
     while (true) {
         std::cout << "enter a command: ";
         if (!Utils::WrapGetLine(&read_str)) {
             std::cout << std::endl;
             exit(1);
         }
-        if (read_str == "EXIT") {
-            std::cout << std::endl;
-            std::cout << "Thank you for using." << std::endl;
-            exit(0);
-        } else if (read_str == "ADD") {
-            ExecAdd();
-        } else if (read_str == "SEARCH") {
-            ExecSearch();
-        } else if (read_str.length() > 0) {
-            PrintUsageHelp();
+        if (read_str.length() == 0) {
+            continue;
+        }
+        DispatchCommand(read_str);
+    }
+}
+
+void    PhoneBook::DispatchCommand(const std::string command) {
+    for (std::size_t i = 0; i < kCommandNumber; i += 1) {
+        if (command == PhoneBook::kCommands[i]) {
+            (this->*PhoneBook::kCommandFuncs[i])();
+            return;
         }
     }
+    PrintUsageHelp();
 }
 
 void    PhoneBook::ExecAdd(void) {
     Contact temp = Contact();
-    if (!temp.SetFields()) {
+    if (!temp.ScanFields()) {
         return;
     }
-    contacts_[store_index_].Copy(temp);
+    contacts_[store_index_].CopyFrom(temp);
     std::cout
         << "accepted your contact:"
         << std::endl;
-    temp.PrintInfo(store_index_ + 1);
+    temp.PrintDetailedInfo(0);
     store_index_ = (store_index_ + 1) % kMaxContactNumber;
     total_index_ += 1;
 }
@@ -49,11 +75,21 @@ void    PhoneBook::ExecSearch(void) {
     if (total_index_ == 0) {
         return;
     }
-    SearchByIndex();
+    const std::size_t index = ScanIndex();
+    if (index == 0) {
+        return;
+    }
+    SearchByIndex(index);
+}
+
+void    PhoneBook::ExecExit(void) {
+    std::cout << std::endl;
+    std::cout << "Thank you for using." << std::endl;
+    exit(0);
 }
 
 void    PrintTableSeparatorRow(const std::size_t col_len, bool with_crosspoint) {
-    const std::size_t col_num = 4; 
+    const std::size_t col_num = 1 + kTableFieldNumber;
     std::cout << "o";
     for (std::size_t i = 0; i < col_num; i += 1) {
         Utils::PrintFieldFixedWidth("", col_len, '-', ".");
@@ -71,13 +107,13 @@ void    PrintTableSeparatorRow(const std::size_t col_len, bool with_crosspoint) 
 
 void    PhoneBook::PrintSearchTable(void) {
     const std::size_t col_len = 10;
-    const std::string col_names[4] = {
+    const std::string col_names[1 + kTableFieldNumber] = {
         "index", "first name", "last name", "nickname",
     };
     std::cout << std::endl;
     PrintTableSeparatorRow(col_len, true);
     std::cout << "|";
-    for (std::size_t i = 0; i < 4; i += 1) {
+    for (std::size_t i = 0; i < 1 + kTableFieldNumber; i += 1) {
         Utils::PrintFieldFixedWidth(col_names[i], col_len, ' ', ".");
         std::cout << "|";
     }
@@ -85,7 +121,7 @@ void    PhoneBook::PrintSearchTable(void) {
     PrintTableSeparatorRow(col_len, true);
     if (total_index_ == 0) {
         std::cout << "|";
-        std::cout << Utils::CenterString("** No Contacts Yet **", 4 * (col_len + 1) - 1);
+        std::cout << Utils::CenterString("** No Contacts Yet **", (1 + kTableFieldNumber) * (col_len + 1) - 1);
         std::cout << "|";
         std::cout << std::endl;
         PrintTableSeparatorRow(col_len, false);
@@ -100,13 +136,15 @@ void    PhoneBook::PrintSearchTable(void) {
         std::cout << "|";
         Utils::PrintFieldFixedWidth(transformer.str(), col_len, ' ', ".");
         std::cout << "|";
-        ContactFieldName fields[] = {
+        ContactFieldName table_fields[] = {
             kFirstName,
             kLastName,
             kNickname
         };
-        for (std::size_t i = 1; i < 4; i += 1) {
-            item.PrintFieldFixedWidth(fields[i - 1], col_len, ' ', ".");
+        for (std::size_t i = 0; i < kTableFieldNumber; i += 1) {
+            Utils::PrintFieldFixedWidth(
+                item.GetField(table_fields[i]),
+                col_len, ' ', ".");
             std::cout << "|";
         }
         std::cout << std::endl;
@@ -114,80 +152,72 @@ void    PhoneBook::PrintSearchTable(void) {
     PrintTableSeparatorRow(col_len, true);
 }
 
-void    PhoneBook::SearchByIndex(void) {
+std::size_t PhoneBook::ScanIndex(void) {
     std::string receiver;
     std::size_t index;
-    std::size_t item_num = (total_index_ >= kMaxContactNumber) ? kMaxContactNumber : total_index_;
-    std::cout
+    const std::size_t item_num = 
+        (total_index_ >= kMaxContactNumber) ? kMaxContactNumber : total_index_;
+    std::stringstream joiner;
+    joiner
         << "enter an index("
         << 1 << "-" << item_num
-        << ") to show detailed info, or type \".q\" to quit: ";
+        << ") to show detailed info (or type \".q\" to quit): ";
+    const std::string prompt = joiner.str();
     while (true) {
-        if (!Utils::WrapGetLine(&receiver)) {
-            return;
+        if (!Utils::AskAndGetLine(&receiver, prompt, IsValidIndex)) {
+            return 0;
         }
-        if (receiver == ".q") {
-            return;
-        }
-        if (receiver.length() >= 2) {
-            std::cout << std::endl << "please enter an integer: ";
-            continue;
-        }
-        bool accepted = true;
-        for (std::size_t i = 0; i < receiver.length(); i += 1) {
-            if (!isdigit(receiver[i])) {
-                std::cout << std::endl
-                    << 1 << "-" << item_num
-                    << " please enter an integer: ";
-                accepted = false;
-                break;
-            }
-        }
-        if (!accepted) {
-            continue;
-        }
+        std::cout << std::endl;
         std::stringstream transformer;
         transformer << receiver;
         transformer >> index;
-        if (index < 1 || item_num < index) {
-            std::cout << std::endl
-                << "please enter an index in range "
-                << 1 << "-" << item_num
-                << ": ";
+        if (index == 0 || index > total_index_ || index > kMaxContactNumber) {
+            std::cout
+                << Utils::kTextYellow
+                << index
+                << " is out of range"
+                << Utils::kTextReset
+                << std::endl;
             continue;
         }
         break;
     }
-    std::cout << std::endl;
+    return index;
+}
+
+
+void    PhoneBook::SearchByIndex(const std::size_t index) {
+    const std::size_t item_num = 
+        (total_index_ >= kMaxContactNumber) ? kMaxContactNumber : total_index_;
     const std::size_t offset = total_index_ - item_num;
     const std::size_t actual_index = (index - 1 + kMaxContactNumber - offset) % kMaxContactNumber;
-    contacts_[actual_index].PrintInfo(index);
+    contacts_[actual_index].PrintDetailedInfo(index);
 }
 
 void    PhoneBook::PrintUsageHelp(void) {
     const std::string command_names[] = {
-        "ADD: ",
-        "SEARCH: ",
-        "EXIT: ",
+        PhoneBook::kCommands[0] + ": ",
+        PhoneBook::kCommands[1] + ": ",
+        PhoneBook::kCommands[2] + ": "
     };
     const std::string command_descs[] = {
         "input a new contact",
         "list and show one from stored",
         "finish this program",
     };
-    std::size_t row_width = Utils::MaxLengthOf(command_names, 3)
-        + Utils::MaxLengthOf(command_descs, 3);
+    std::size_t name_len = Utils::MaxLengthOf(command_names, kCommandNumber);
+    std::size_t desc_len = Utils::MaxLengthOf(command_descs, kCommandNumber);
     std::string str_list[] = {
-        Utils::CenterString("** Available Commands **", row_width),
+        Utils::CenterString("** Available Commands **", name_len + desc_len),
         "",
-        Utils::WidenString(command_names[0], command_descs[0], row_width),
-        Utils::WidenString(command_names[1], command_descs[1], row_width),
-        Utils::WidenString(command_names[2], command_descs[2], row_width),
+        Utils::AlignString(command_names[0], name_len) + Utils::AlignString(command_descs[0], desc_len, true),
+        Utils::AlignString(command_names[1], name_len) + Utils::AlignString(command_descs[1], desc_len, true),
+        Utils::AlignString(command_names[2], name_len) + Utils::AlignString(command_descs[2], desc_len, true),
     };
     Utils::PrintLinesWithinRect(
         PhoneBook::kUsageTopFrame,
         PhoneBook::kUsageMidFrame,
         PhoneBook::kUsageBottomFrame,
         str_list,
-        5, 1);
+        2 + kCommandNumber, 1);
 }

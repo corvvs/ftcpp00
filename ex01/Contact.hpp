@@ -7,8 +7,9 @@
 # include <sstream>
 # include "Utils.hpp"
 
+const size_t kContactFieldNumber = 5;
 enum ContactFieldName {
-    kFirstName,
+    kFirstName = 0,
     kLastName,
     kNickname,
     kPhoneNumber,
@@ -19,17 +20,13 @@ class Contact {
     public:
         Contact(void);
 
-        bool    SetFields(void);
-        void    Copy(const Contact item);
-        void    PrintFieldFixedWidth(
-            ContactFieldName field,
-            const size_t width,
-            char padding_char,
-            std::string abbrev_str
-        );
-        void    PrintInfo(std::size_t index);
+        bool                ScanFields(void);
+        void                CopyFrom(const Contact item);
+        void                PrintDetailedInfo(std::size_t index);
+        const std::string&  GetField(ContactFieldName field);
 
     private:
+        static const std::string kFields[kContactFieldNumber];
         static const std::string kInfoTopFrame[3];
         static const std::string kInfoMidFrame[3];
         static const std::string kInfoBottomFrame[3];
@@ -40,7 +37,6 @@ class Contact {
         std::string phone_number_;
         std::string darkest_secret_;
 
-        std::string *GetField(ContactFieldName field);
 };
 
 #endif

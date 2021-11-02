@@ -8,28 +8,23 @@ bool    Utils::WrapGetLine(std::string *buffer) {
     if (std::cin.bad()) {
         return false;
     }
-    std::size_t start = 0;
-    std::size_t end = temp.length();
-    while (start < end && isspace(temp[start])) {
-        start += 1;
-    }
-    while (start < end && isspace(temp[end - 1])) {
-        end -= 1;
-    }
-    *buffer = temp.substr(start, end - start);
+    *buffer = Utils::TrimString(temp);
     return true;
 }
 
 bool    Utils::AskAndGetLine(
     std::string *buffer,
-    const std::string prompt,
-    bool (*validator)(const std::string)
+    const std::string& prompt,
+    bool (*validator)(const std::string&)
 ) {
     while (true) {
         std::cout << prompt;
+        std::cout << Utils::kTextUnderline;
         if (!WrapGetLine(buffer)) {
+            std::cout << Utils::kTextReset;
             return false;
         }
+        std::cout << Utils::kTextReset;
         if (*buffer == Utils::kQuitAsk) {
             return false;
         }
@@ -112,17 +107,47 @@ bool    Utils::PrintLinesWithinRect(
     return true;
 }
 
-bool    Utils::PrintStringRepeatedly(std::string str, std::size_t iteration) {
-    for (std::size_t i = 0; i < iteration; i += 1) {
-        std::cout << str;
-        if (std::cout.bad()) {
-            return false;
-        }
+bool    Utils::PrintStringRepeatedly(
+    const std::string& str,
+    std::size_t iteration
+) {
+    const std::string repeaetd = Utils::RepeatedString(str, iteration);
+    std::cout << repeaetd;
+    if (std::cout.bad()) {
+        return false;
     }
     return true;
 }
 
-std::size_t Utils::MaxLengthOf(const std::string strs[], const std::size_t len) {
+std::string Utils::TrimString(
+    const std::string& str
+) {
+    std::size_t start = 0;
+    std::size_t end = str.length();
+    while (start < end && isspace(str[start])) {
+        start += 1;
+    }
+    while (start < end && isspace(str[end - 1])) {
+        end -= 1;
+    }
+    return str.substr(start, end - start);
+}
+
+std::string Utils::RepeatedString(
+    const std::string& unit,
+    const std::size_t times
+) {
+    std::string repeated("");
+    for (std::size_t i = 0; i < times; i += 1) {
+        repeated.append(unit);
+    }
+    return repeated;
+}
+
+std::size_t Utils::MaxLengthOf(
+    const std::string strs[],
+    const std::size_t len
+) {
     std::size_t max_len = 0;
     for (std::size_t i = 0; i < len; i += 1) {
         if (max_len < strs[i].length()) {
@@ -132,44 +157,57 @@ std::size_t Utils::MaxLengthOf(const std::string strs[], const std::size_t len) 
     return max_len;
 }
 
-std::string Utils::WidenString(
-    const std::string left,
-    const std::string right,
+std::string Utils::SpereadStrings(
+    const std::string& left,
+    const std::string& right,
     std::size_t width
 ) {
-    std::string widened = std::string(left);
-    for (std::size_t i = widened.length() + right.length(); i < width; i += 1) {
-        widened.append(" ");
+    const std::size_t str_len = left.length() + right.length();
+    if (width <= str_len) {
+        return left + right;
     }
-    widened.append(right);
-    return widened;
+    return left
+        + Utils::RepeatedString(" ", width - str_len)
+        + right;
 }
 
-std::string Utils::CenterString(const std::string str, std::size_t width) {
-    std::stringstream joiner;
+std::string Utils::AlignString(
+    const std::string& str,
+    std::size_t width,
+    bool left
+) {
+    if (width <= str.length()) {
+        return std::string(str);
+    }
+    std::string filler = Utils::RepeatedString(" ", width - str.length());
+    if (left) {
+        return str + filler;
+    } else {
+        return filler + str;
+    }
+}
+
+std::string Utils::CenterString(
+    const std::string str,
+    std::size_t width
+) {
     const std::size_t len_str = str.length();
-    if (len_str > width) {
-        joiner << str;
-        return joiner.str();
+    if (len_str >= width) {
+        return std::string(str);
     }
     const std::size_t rest = width - len_str;
     const std::size_t padding_left = rest / 2;
     const std::size_t padding_right = rest - padding_left;
-    for (std::size_t i = 0; i < padding_left; i += 1) {
-        joiner << " ";
-    }
-    joiner << str;
-    for (std::size_t i = 0; i < padding_right; i += 1) {
-        joiner << " ";
-    }
-    return joiner.str();
+    return Utils::RepeatedString(" ", padding_left)
+        + str
+        + Utils::RepeatedString(" ", padding_right);
 }
 
 void    Utils::PrintFieldFixedWidth(
-    const std::string str,
+    const std::string& str,
     const size_t width,
     char padding_char,
-    const std::string abbrev_str
+    const std::string& abbrev_str
 ) {
     const std::size_t field_len = str.length();
     if (field_len > width) {
@@ -185,17 +223,33 @@ void    Utils::PrintFieldFixedWidth(
     }
 }
 
-bool    Utils::IsValidName(std::string val) {
+void    Utils::PrintWarning(const std::string& str) {
+    std::cout
+        << Utils::kTextYellow
+        << str
+        << Utils::kTextReset
+        << std::endl;
+}
+
+
+bool    Utils::IsValidName(const std::string& val) {
     if (val.length() == 0) {
+        PrintWarning("blank is not acceptable");
         return false;
     }
     return true;
 }
 
-bool    Utils::IsValidPhoneNumber(std::string val) {
+bool    Utils::IsValidPhoneNumber(const std::string& val) {
     std::size_t n = val.length();
     // positive length
     if (n == 0) {
+        PrintWarning("blank is not acceptable");
+        return false;
+    }
+    // no leading / trailing hyphen.
+    if (val[0] == '-' || val[n - 1] == '-') {
+        PrintWarning("'-' is not able to be a head or a tail");
         return false;
     }
     // digits and hyphen
@@ -203,21 +257,19 @@ bool    Utils::IsValidPhoneNumber(std::string val) {
     bool is_hyphen = true;
     for (std::size_t i = 0; i < n; i += 1) {
         if (!(isdigit(val[i]) || val[i] == '-')) {
+            PrintWarning("only accepts '0-9' or '-'");
             return false;
         }
         if (is_hyphen && val[i] == '-') {
+            PrintWarning("detected continuous '-'");
             return false;
         }
         is_hyphen = (val[i] == '-');
     }
-    // no leading / trailing hyphen.
-    if (val[0] == '-' || val[n - 1] == '-') {
-        return false;
-    }
     return true;
 }
 
-bool    Utils::IsValidSecret(std::string val) {
+bool    Utils::IsValidSecret(const std::string& val) {
     if (val.length() == 0) {
         return false;
     }
