@@ -4,17 +4,23 @@ NAME		:=	test
 SRCS		:=	test.cpp Account.cpp
 OBJS		:=	$(SRCS:.cpp=.o)
 
-.PHONY		:	all clean fclean re
+.PHONY:		all clean fclean re
 
-all			:	$(OBJS)
+all:		$(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
-$(NAME)		:	all
+$(NAME):	all
 
-clean		:
+clean:
 	$(RM) -rf $(OBJS)
 
-fclean		:	clean
+fclean:		clean
 	$(RM) $(NAME)
 
-re			:	fclean all
+re:			fclean all
+
+.PHONY		:	diff
+
+diff:		all
+	bash diff.sh
+

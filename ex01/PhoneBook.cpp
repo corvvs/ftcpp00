@@ -49,15 +49,19 @@ void    PhoneBook::ExecSearch(void) {
 }
 
 void    PrintTableSeparatorRow(const std::size_t col_len, bool with_crosspoint) {
-    std::cout << "+";
-    for (std::size_t i = 0; i < 4; i += 1) {
+    const std::size_t col_num = 4; 
+    std::cout << "o";
+    for (std::size_t i = 0; i < col_num; i += 1) {
         Utils::PrintFieldFixedWidth("", col_len, '-', ".");
-        if (with_crosspoint) {
-            std::cout << "+";
-        } else {
-            std::cout << "-";
+        if (i + 1 < col_num) {
+            if (with_crosspoint) {
+                std::cout << "o";
+            } else {
+                std::cout << "-";
+            }
         }
     }
+    std::cout << "o";
     std::cout << std::endl;
 }
 
