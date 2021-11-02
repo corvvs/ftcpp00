@@ -1,5 +1,9 @@
 #include "Contact.hpp"
 
+const std::string Contact::kInfoTopFrame[3]     = {"╭", "─", "╮"};
+const std::string Contact::kInfoMidFrame[3]     = {"│", " ", "│"};
+const std::string Contact::kInfoBottomFrame[3]  = {"╰", "─", "╯"};
+
 Contact::Contact(void):
     first_name_(""),
     last_name_(""),
@@ -57,33 +61,36 @@ void    Contact::PrintInfo(std::size_t index) {
     std::stringstream transformer;
     transformer << index;
     const std::string index_line = "Contact Index #" + transformer.str();
-    std::size_t row_width = Utils::MaxLength((std::string[]){
+    const std::string titles[] = {
         index_line,
         "First Name: ",
         "Last Name: ",
         "Nickame: ",
         "Phone Number: ",
-        "Darkest Secret: ",
-    }, 6) + Utils::MaxLength((std::string[]){
+        "Darkest Secret: "
+    };
+    const std::string values[] = {
         first_name_,
         last_name_,
         nickname_,
         phone_number_,
-        darkest_secret_,
-    }, 5);
+        darkest_secret_
+    };
+    std::size_t row_width = Utils::MaxLengthOf(titles, 6) + Utils::MaxLengthOf(values, 5);
+    const std::string lines[] = {
+        Utils::CenterString(index_line, row_width),
+        "",
+        Utils::WidenString(titles[1], values[0], row_width),
+        Utils::WidenString(titles[2], values[1], row_width),
+        Utils::WidenString(titles[3], values[2], row_width),
+        Utils::WidenString(titles[4], values[3], row_width),
+        Utils::WidenString(titles[5], values[4], row_width),
+    };
     Utils::PrintLinesWithinRect(
-        kInfoTopFrame,
-        kInfoMidFrame,
-        kInfoBottomFrame,
-        (std::string[]){
-            Utils::CenterString(index_line, row_width),
-            "",
-            Utils::WidenString("First Name: "    , first_name_, row_width),
-            Utils::WidenString("Last Name: "     , last_name_, row_width),
-            Utils::WidenString("Nickame: "       , nickname_, row_width),
-            Utils::WidenString("Phone Number: "  , phone_number_, row_width),
-            Utils::WidenString("Darkest Secret: ", darkest_secret_, row_width),
-        }, 7, 1);
+        Contact::kInfoTopFrame,
+        Contact::kInfoMidFrame,
+        Contact::kInfoBottomFrame,
+        lines, 7, 1);
 }
 
 std::string   *Contact::GetField(ContactFieldName field) {

@@ -1,5 +1,5 @@
 CXX			:=	clang++
-CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98 -D BUILD42=1
+CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98 --pedantic -D BUILD42=1
 NAME		:=	phonebook
 SRCS		:=	main.cpp PhoneBook.cpp Contact.cpp Utils.cpp
 OBJS		:=	$(SRCS:.cpp=.o)

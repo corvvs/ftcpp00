@@ -1,5 +1,5 @@
 CXX			:=	clang++
-CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98
+CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98 --pedantic
 NAME		:=	test
 SRCS		:=	test.cpp Account.cpp
 OBJS		:=	$(SRCS:.cpp=.o)

@@ -16,19 +16,22 @@ namespace Utils {
         bool (*validator)(const std::string)
     );
     bool        PrintLine(
-        std::string left_mid_right[3],
-        std::size_t inner_width
+        const std::string left_mid_right[3],
+        const std::size_t inner_width
     );
     bool        PrintLinesWithinRect(
-        std::string top_tiles[3],
-        std::string mid_tiles[3],
-        std::string bottom_tiles[3],
-        std::string lines[],
-        std::size_t lines_len,
-        unsigned int padding
+        const std::string top_tiles[3],
+        const std::string mid_tiles[3],
+        const std::string bottom_tiles[3],
+        const std::string lines[],
+        const std::size_t lines_len,
+        const unsigned int padding
     );
     bool        PrintStringRepeatedly(std::string str, std::size_t iteration);
-    std::size_t MaxLength(std::string strs[], std::size_t len);
+    std::size_t MaxLengthOf(
+        const std::string strs[],
+        const std::size_t len
+    );
     std::string WidenString(
         const std::string left,
         const std::string right,

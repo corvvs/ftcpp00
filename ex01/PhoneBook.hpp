@@ -11,9 +11,6 @@
 # include "Utils.hpp"
 
 const size_t kMaxContactNumber = 8;
-# define kUsageTopFrame     (std::string[]){"┌", "─", "┐"}
-# define kUsageMidFrame     (std::string[]){"│", " ", "│"}
-# define kUsageBottomFrame  (std::string[]){"└", "─", "┘"}
 
 class PhoneBook {
     public:
@@ -24,7 +21,10 @@ class PhoneBook {
         Contact     contacts_[kMaxContactNumber];
         std::size_t total_index_;
         std::size_t store_index_;
-
+        
+        static const std::string kUsageTopFrame[3];
+        static const std::string kUsageMidFrame[3];
+        static const std::string kUsageBottomFrame[3];
         void        ExecAdd(void);
         void        ExecSearch(void);
         void        PrintSearchTable(void);

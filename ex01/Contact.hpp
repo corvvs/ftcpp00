@@ -12,12 +12,8 @@ enum ContactFieldName {
     kLastName,
     kNickname,
     kPhoneNumber,
-    kDarkestSecret,
+    kDarkestSecret
 };
-
-# define kInfoTopFrame      (std::string[]){"╭", "─", "╮"}
-# define kInfoMidFrame      (std::string[]){"│", " ", "│"}
-# define kInfoBottomFrame   (std::string[]){"╰", "─", "╯"}
 
 class Contact {
     public:
@@ -34,6 +30,10 @@ class Contact {
         void    PrintInfo(std::size_t index);
 
     private:
+        static const std::string kInfoTopFrame[3];
+        static const std::string kInfoMidFrame[3];
+        static const std::string kInfoBottomFrame[3];
+
         std::string first_name_;
         std::string last_name_;
         std::string nickname_;

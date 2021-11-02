@@ -42,8 +42,8 @@ bool    Utils::AskAndGetLine(
 }
 
 bool    Utils::PrintLine(
-    std::string left_mid_right[3],
-    std::size_t inner_width
+    const std::string left_mid_right[3],
+    const std::size_t inner_width
 ) {
     if (!Utils::PrintStringRepeatedly(left_mid_right[0], 1)) {
         return false;
@@ -62,15 +62,15 @@ bool    Utils::PrintLine(
 }
 
 bool    Utils::PrintLinesWithinRect(
-    std::string top_tiles[3],
-    std::string mid_tiles[3],
-    std::string bottom_tiles[3],
-    std::string lines[],
-    std::size_t lines_len,
-    unsigned int padding
+    const std::string top_tiles[3],
+    const std::string mid_tiles[3],
+    const std::string bottom_tiles[3],
+    const std::string lines[],
+    const std::size_t lines_len,
+    const unsigned int padding
 ) {
-    std::size_t max_line_len = Utils::MaxLength(lines, lines_len);
-    std::size_t inner_width = max_line_len + 2 * padding;
+    const std::size_t max_line_len = Utils::MaxLengthOf(lines, lines_len);
+    const std::size_t inner_width = max_line_len + 2 * padding;
     if (!PrintLine(top_tiles, inner_width)) {
         return false;
     }
@@ -122,14 +122,14 @@ bool    Utils::PrintStringRepeatedly(std::string str, std::size_t iteration) {
     return true;
 }
 
-std::size_t Utils::MaxLength(std::string strs[], std::size_t len) {
-    std::size_t MaxLength = 0;
+std::size_t Utils::MaxLengthOf(const std::string strs[], const std::size_t len) {
+    std::size_t max_len = 0;
     for (std::size_t i = 0; i < len; i += 1) {
-        if (MaxLength < strs[i].length()) {
-            MaxLength = strs[i].length();
+        if (max_len < strs[i].length()) {
+            max_len = strs[i].length();
         }
     }
-    return MaxLength;
+    return max_len;
 }
 
 std::string Utils::WidenString(

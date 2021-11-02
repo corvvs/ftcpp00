@@ -1,5 +1,9 @@
 #include "PhoneBook.hpp"
 
+const std::string PhoneBook::kUsageTopFrame[3]      = {"┌", "─", "┐"};
+const std::string PhoneBook::kUsageMidFrame[3]      = {"│", " ", "│"};
+const std::string PhoneBook::kUsageBottomFrame[3]   = {"└", "─", "┘"};
+
 PhoneBook::PhoneBook(void): total_index_(0), store_index_(0)
 {}
 
@@ -161,27 +165,29 @@ void    PhoneBook::SearchByIndex(void) {
 }
 
 void    PhoneBook::PrintUsageHelp(void) {
-    std::string command_names[] = {
+    const std::string command_names[] = {
         "ADD: ",
         "SEARCH: ",
         "EXIT: ",
     };
-    std::string command_descs[] = {
+    const std::string command_descs[] = {
         "input a new contact",
         "list and show one from stored",
         "finish this program",
     };
-    std::size_t row_width = Utils::MaxLength(command_names, 3)
-        + Utils::MaxLength(command_descs, 3);
+    std::size_t row_width = Utils::MaxLengthOf(command_names, 3)
+        + Utils::MaxLengthOf(command_descs, 3);
+    std::string str_list[] = {
+        Utils::CenterString("** Available Commands **", row_width),
+        "",
+        Utils::WidenString(command_names[0], command_descs[0], row_width),
+        Utils::WidenString(command_names[1], command_descs[1], row_width),
+        Utils::WidenString(command_names[2], command_descs[2], row_width),
+    };
     Utils::PrintLinesWithinRect(
-        kUsageTopFrame,
-        kUsageMidFrame,
-        kUsageBottomFrame,
-        (std::string[]){
-            Utils::CenterString("** Available Commands **", row_width),
-            "",
-            Utils::WidenString(command_names[0], command_descs[0], row_width),
-            Utils::WidenString(command_names[1], command_descs[1], row_width),
-            Utils::WidenString(command_names[2], command_descs[2], row_width),
-        }, 5, 1);
+        PhoneBook::kUsageTopFrame,
+        PhoneBook::kUsageMidFrame,
+        PhoneBook::kUsageBottomFrame,
+        str_list,
+        5, 1);
 }
