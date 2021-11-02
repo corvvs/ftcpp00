@@ -223,6 +223,14 @@ void    Utils::PrintFieldFixedWidth(
     }
 }
 
+void    Utils::PrintAffirmative(const std::string& str) {
+    std::cout
+        << Utils::kTextGreen
+        << str
+        << Utils::kTextReset
+        << std::endl;
+}
+
 void    Utils::PrintWarning(const std::string& str) {
     std::cout
         << Utils::kTextYellow
@@ -230,7 +238,6 @@ void    Utils::PrintWarning(const std::string& str) {
         << Utils::kTextReset
         << std::endl;
 }
-
 
 bool    Utils::IsValidName(const std::string& val) {
     if (val.length() == 0) {

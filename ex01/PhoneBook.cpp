@@ -16,13 +16,16 @@ const std::string PhoneBook::kUsageBottomFrame[3]   = {"└", "─", "┘"};
 
 bool    IsValidIndex(const std::string& val) {
     if (val.length() >= 2) {
+        Utils::PrintWarning("too long");
         return false;
     }
     if (val.length() == 0) {
+        Utils::PrintWarning("blank is not acceptable");
         return false;
     }
     for (std::size_t i = 0; i < val.length(); i += 1) {
         if (!isdigit(val[i])) {
+            Utils::PrintWarning("only accepts '0-9'");
             return false;
         }
     }
@@ -62,9 +65,7 @@ void    PhoneBook::ExecAdd(void) {
         return;
     }
     contacts_[store_index_].CopyFrom(temp);
-    std::cout
-        << "accepted your contact:"
-        << std::endl;
+    Utils::PrintAffirmative("accepted your contact:");
     temp.PrintDetailedInfo(0);
     store_index_ = (store_index_ + 1) % kMaxContactNumber;
     total_index_ += 1;

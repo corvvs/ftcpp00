@@ -11,6 +11,7 @@ namespace Utils {
     const std::string kTextUnderline = "\x1B[4m";
     const std::string kTextReset = "\x1B[m";
     const std::string kTextRed = "\x1B[91m";
+    const std::string kTextGreen = "\x1B[92m";
     const std::string kTextYellow = "\x1B[93m";
 
 
@@ -67,6 +68,7 @@ namespace Utils {
         char padding_char,
         const std::string& abbrev_str
     );
+    void        PrintAffirmative(const std::string& str);
     void        PrintWarning(const std::string& str);
     bool        IsValidName(const std::string& val);
     bool        IsValidPhoneNumber(const std::string& val);
