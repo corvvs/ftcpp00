@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 {
     if (argc <= 1)
     {
-        std::cout << MESSAGE_NOARG << std::endl;
+        std::cout << kNoise << std::endl;
 
         return (0);
     }
